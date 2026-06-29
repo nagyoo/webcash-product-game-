@@ -67,7 +67,7 @@ body{background:#f8f0ff;display:flex;flex-direction:column;align-items:center;ju
 #mergeGuide b{color:#9070cc}
 #arenaWrap{flex:1;display:flex;flex-direction:column;align-items:center}
 #arena{position:relative;width:220px;height:540px;background:linear-gradient(180deg,#fef6ff,#fdf0f8);border-left:2.5px solid #e8c8e0;border-right:2.5px solid #e8c8e0;border-bottom:2.5px solid #e8c8e0;cursor:crosshair;overflow:hidden}
-#gc{position:absolute;inset:0;display:block}
+#gc{position:absolute;top:0;left:0;display:block}
 #dangerLine{position:absolute;top:56px;left:0;right:0;height:2px;pointer-events:none;z-index:5;background:repeating-linear-gradient(90deg,#f07898 0,#f07898 7px,transparent 7px,transparent 13px)}
 #gameOverPanel{display:none;position:absolute;inset:0;z-index:20;background:rgba(252,236,248,0.95);flex-direction:column;align-items:center;justify-content:center;gap:12px}
 #gameOverPanel h2{font-size:22px;font-weight:900;color:#c04878}
@@ -94,12 +94,7 @@ body{background:#f8f0ff;display:flex;flex-direction:column;align-items:center;ju
     display:flex;
     justify-content:center
   }
-  #arena{
-    width:92vw !important;
-    height:calc(92vw * 2.0) !important;
-    max-height:60vh !important;
-    margin:0 auto
-  }
+  #arena{margin:0 auto}
   #leftPanel{
     width:92vw !important;
     flex-direction:row !important;
@@ -411,28 +406,24 @@ function resizeArena(){
   const isMobile = window.innerWidth <= 600;
 
   if(isMobile){
-    // CSS가 이미 arena 크기를 잡아줌 — 그 크기를 읽어서 캔버스에 반영
-    // 강제로 CSS 크기 계산
-    const vw92 = Math.floor(window.innerWidth * 0.92);
-    const cssH = Math.min(Math.floor(vw92 * 2.0), Math.floor(window.innerHeight * 0.60), 600);
-    W = vw92;
-    H = cssH;
-    // arena DOM 크기 직접 설정
-    arena.style.width = vw92 + 'px';
+    const vw = window.innerWidth;
+    const cssW = Math.floor(vw * 0.92);
+    const cssH = Math.min(Math.floor(cssW * 2.0), Math.floor(window.innerHeight * 0.58));
+    W = cssW; H = cssH;
+    arena.style.width  = cssW + 'px';
     arena.style.height = cssH + 'px';
-    // 캔버스 물리 픽셀 = CSS 크기 × dpr
-    gc.width  = Math.round(vw92 * dpr);
-    gc.height = Math.round(cssH * dpr);
-    gc.style.width  = vw92 + 'px';
-    gc.style.height = cssH + 'px';
+    gc.style.width     = cssW + 'px';
+    gc.style.height    = cssH + 'px';
+    gc.width           = cssW * dpr;
+    gc.height          = cssH * dpr;
   } else {
     W = 220; H = 540;
     arena.style.width  = '220px';
     arena.style.height = '540px';
-    gc.width  = Math.round(220 * dpr);
-    gc.height = Math.round(540 * dpr);
-    gc.style.width  = '220px';
-    gc.style.height = '540px';
+    gc.style.width     = '220px';
+    gc.style.height    = '540px';
+    gc.width           = 220 * dpr;
+    gc.height          = 540 * dpr;
   }
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   DNG  = Math.round(H * 0.104);
@@ -453,12 +444,15 @@ const nnEl=document.getElementById("playerNameEl");
 const goEl=document.getElementById("gameOverPanel");
 
 window.startGame=function(){
-  resizeArena();
   nnEl.textContent=window._nick||'Player';
   document.getElementById('startScreen').style.display='none';
   document.getElementById('gameScreen').style.display='flex';
-  resetGame();
-  if(!loopStarted){loopStarted=true;loop();}
+  // display:flex 적용 후 한 프레임 뒤에 크기 계산
+  requestAnimationFrame(()=>{
+    resizeArena();
+    resetGame();
+    if(!loopStarted){loopStarted=true;loop();}
+  });
 };
 
 function resetGame(){
