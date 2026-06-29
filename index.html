@@ -87,8 +87,8 @@ body{background:#f8f0ff;display:flex;flex-direction:column;align-items:center;ju
   #nextCard canvas{margin:0 auto}
   #rightPanel{width:100%;flex-direction:row;flex-wrap:wrap;gap:6px}
   #rightPanel .panel{flex:1;min-width:140px}
-  #arenaWrap{width:100%}
-  #arena{width:100% !important;max-width:400px;height:65vw;min-height:320px;max-height:480px}
+  #arenaWrap{width:100%;align-items:center;justify-content:center}
+  #arena{width:calc(100vw - 16px) !important;max-width:400px;height:calc((100vw - 16px) * 2.45) !important;max-height:80vh;min-height:320px;margin:0 auto}
   #gc{width:100% !important;height:100% !important}
   .rank-row{padding:3px 5px}
   .rank-name{font-size:9px}
@@ -384,16 +384,24 @@ function mergeable(a,b){
 
 let W=220,H=540,WALL=4,FLOOR=4,DNG=56;
 function resizeArena(){
+  const dpr=window.devicePixelRatio||1;
   const isMobile=window.innerWidth<=480;
   if(isMobile){
-    const aw=Math.min(window.innerWidth-8,400);
-    const ah=Math.min(Math.max(aw*0.65,320),480);
-    W=aw;H=ah;
-    gc.width=aw;gc.height=ah;
-    arena.style.width=aw+"px";arena.style.height=ah+"px";
+    // CSS 크기
+    const cssW=Math.min(window.innerWidth-16,400);
+    const cssH=Math.min(cssW*2.45,window.innerHeight*0.8,700);
+    // 논리 좌표 (게임 내부 좌표계)
+    W=cssW;H=cssH;
+    // 캔버스 실제 픽셀 (dpr 배율로 선명하게)
+    gc.width=Math.round(cssW*dpr);gc.height=Math.round(cssH*dpr);
+    gc.style.width=cssW+"px";gc.style.height=cssH+"px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    arena.style.width=cssW+"px";arena.style.height=cssH+"px";
   } else {
     W=220;H=540;
-    gc.width=220;gc.height=540;
+    gc.width=Math.round(220*dpr);gc.height=Math.round(540*dpr);
+    gc.style.width="220px";gc.style.height="540px";
+    ctx.setTransform(dpr,0,0,dpr,0,0);
     arena.style.width="220px";arena.style.height="540px";
   }
   DNG=Math.round(H*0.104);
@@ -608,7 +616,12 @@ function render(){
 }
 
 function drawNext(){
-  nctx.clearRect(0,0,86,86);
+  const dpr=window.devicePixelRatio||1;
+  const sz=86;
+  nc.width=Math.round(sz*dpr);nc.height=Math.round(sz*dpr);
+  nc.style.width=sz+"px";nc.style.height=sz+"px";
+  nctx.setTransform(dpr,0,0,dpr,0,0);
+  nctx.clearRect(0,0,sz,sz);
   const orig=SZ[nextItem.tier];SZ[nextItem.tier]=Math.min(orig,30);
   drawBall(nctx,43,43,nextItem);SZ[nextItem.tier]=orig;
 }
@@ -616,7 +629,16 @@ function drawNext(){
 arena.addEventListener("mousemove",e=>{if(!alive)return;lx=e.clientX-arena.getBoundingClientRect().left;});
 arena.addEventListener("mouseleave",()=>{lx=null;});
 arena.addEventListener("click",e=>{if(!alive||!canDrop||isDangerous())return;drop(e.clientX-arena.getBoundingClientRect().left);});
-arena.addEventListener("touchmove",e=>{e.preventDefault();lx=e.touches[0].clientX-arena.getBoundingClientRect().left;},{passive:false});
+arena.addEventListener("touchmove",e=>{
+  e.preventDefault();
+  e.stopPropagation();
+  const rect=arena.getBoundingClientRect();
+  lx=e.touches[0].clientX-rect.left;
+},{passive:false});
+// 게임 중 페이지 스크롤 방지
+document.body.addEventListener("touchmove",e=>{
+  if(document.getElementById("gameScreen").style.display!=="none")e.preventDefault();
+},{passive:false});
 arena.addEventListener("touchend",()=>{if(alive&&canDrop&&!isDangerous())drop(lx??W/2);});
 
 function isDangerous(){
