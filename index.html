@@ -572,10 +572,13 @@ function drawNext(){
 
 arena.addEventListener("mousemove",e=>{if(!alive)return;lx=e.clientX-arena.getBoundingClientRect().left;});
 arena.addEventListener("mouseleave",()=>{lx=null;});
-arena.addEventListener("click",e=>{if(!alive||!canDrop)return;drop(e.clientX-arena.getBoundingClientRect().left);});
+arena.addEventListener("click",e=>{if(!alive||!canDrop||isDangerous())return;drop(e.clientX-arena.getBoundingClientRect().left);});
 arena.addEventListener("touchmove",e=>{e.preventDefault();lx=e.touches[0].clientX-arena.getBoundingClientRect().left;},{passive:false});
-arena.addEventListener("touchend",()=>{if(alive&&canDrop)drop(lx??W/2);});
+arena.addEventListener("touchend",()=>{if(alive&&canDrop&&!isDangerous())drop(lx??W/2);});
 
+function isDangerous(){
+  return balls.some(b=>!b.dead&&b.y-b.r<DNG);
+}
 function drop(cx){
   const r=SZ[nextItem.tier],px=Math.max(WALL+r,Math.min(W-WALL-r,cx));
   const b=new Ball(px,r+WALL+3,nextItem);b.vy=2;balls.push(b);
