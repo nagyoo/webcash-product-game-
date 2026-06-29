@@ -74,31 +74,39 @@ body{background:#f8f0ff;display:flex;flex-direction:column;align-items:center;ju
 #gameOverPanel p{font-size:13px;color:#906878;font-weight:700}
 #restartBtn{padding:11px 30px;border-radius:20px;border:none;background:linear-gradient(135deg,#e8a0cc,#c090e8);color:#fff;font-size:14px;font-weight:900;cursor:pointer}
 #rankStatus{font-size:9px;color:#c0a0c0;text-align:center;margin-top:4px;min-height:12px}
-@media(max-width:480px){
-  #authScreen{width:94vw;padding:28px 18px}
-  #startScreen{width:94vw;padding:24px 16px}
-  .start-title{font-size:22px}
-  #gameScreen{width:100vw;padding:0 4px}
-  .game-title-bar{font-size:13px}
-  .game-layout{flex-direction:column;align-items:center;gap:6px}
-  #leftPanel{width:100%;flex-direction:row;flex-wrap:wrap;gap:6px}
-  #scoreCard{flex:1;min-width:120px}
+@media(max-width:600px){
+  body{padding:0.5rem 0}
+  #authScreen{width:92vw;padding:28px 18px}
+  #startScreen{width:92vw;padding:24px 16px}
+  .start-title{font-size:20px}
+  /* 게임화면: 세로 풀스크린 */
+  #gameScreen{width:100vw;padding:0;gap:6px}
+  .game-title-bar{font-size:13px;padding:4px 0}
+  /* 레이아웃: 아레나 먼저, 패널들 아래 */
+  .game-layout{flex-direction:column;align-items:center;gap:6px;width:100%}
+  /* 아레나 순서 변경 */
+  #arenaWrap{order:1;width:100%;display:flex;justify-content:center}
+  #leftPanel{order:2;width:92vw;flex-direction:row;gap:6px;flex-wrap:wrap}
+  #rightPanel{order:3;width:92vw;flex-direction:row;gap:6px;flex-wrap:wrap}
+  #leftPanel,#rightPanel{display:flex}
+  #scoreCard{flex:1;min-width:130px;text-align:center}
   #nextCard{flex:1;min-width:100px;text-align:center}
-  #nextCard canvas{margin:0 auto}
-  #rightPanel{width:100%;flex-direction:row;flex-wrap:wrap;gap:6px}
-  #rightPanel .panel{flex:1;min-width:140px}
-  #arenaWrap{width:100%;align-items:center;justify-content:center}
-  #arena{width:calc(100vw - 16px) !important;max-width:400px;height:calc((100vw - 16px) * 2.45) !important;max-height:80vh;min-height:320px;margin:0 auto}
-  #gc{width:100% !important;height:100% !important}
-  .rank-row{padding:3px 5px}
+  #nextCard canvas{margin:0 auto;display:block}
+  #rightPanel .panel{flex:1;min-width:130px}
+  /* 아레나 크기 */
+  #arena{width:92vw !important;height:calc(92vw * 2.45) !important;max-height:72vh;margin:0 auto}
+  #gc{position:absolute;inset:0;width:100% !important;height:100% !important}
+  /* 폰트 */
+  #scoreNum{font-size:28px}
+  #bestRow{font-size:10px}
+  #playerNameEl{font-size:10px}
+  .panel-title{font-size:8px;margin-bottom:5px}
+  .rank-row{padding:3px 4px;margin-bottom:3px}
+  .rank-medal{font-size:11px}
   .rank-name{font-size:9px}
   .rank-score{font-size:9px}
-  #mergeGuide{font-size:8px}
-  .panel-title{font-size:8px}
-  .leg-items{font-size:9px}
-  .leg-name{font-size:11px}
-  .flow-label{font-size:8px}
-  #scoreNum{font-size:26px}
+  #mergeGuide{font-size:8px;line-height:1.6}
+  #rankStatus{font-size:8px}
 }
 </style>
 </head>
@@ -385,28 +393,35 @@ function mergeable(a,b){
 let W=220,H=540,WALL=4,FLOOR=4,DNG=56;
 function resizeArena(){
   const dpr=window.devicePixelRatio||1;
-  const isMobile=window.innerWidth<=480;
+  const isMobile=window.innerWidth<=600;
   if(isMobile){
-    // CSS 크기
-    const cssW=Math.min(window.innerWidth-16,400);
-    const cssH=Math.min(cssW*2.45,window.innerHeight*0.8,700);
-    // 논리 좌표 (게임 내부 좌표계)
-    W=cssW;H=cssH;
-    // 캔버스 실제 픽셀 (dpr 배율로 선명하게)
-    gc.width=Math.round(cssW*dpr);gc.height=Math.round(cssH*dpr);
-    gc.style.width=cssW+"px";gc.style.height=cssH+"px";
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    arena.style.width=cssW+"px";arena.style.height=cssH+"px";
+    // CSS 논리 크기
+    const cssW=Math.round(window.innerWidth*0.92);
+    const cssH=Math.min(Math.round(cssW*2.45), Math.round(window.innerHeight*0.72), 700);
+    W=cssW; H=cssH;
+    // 물리 픽셀 (dpr 배율 → 선명)
+    gc.width=Math.round(cssW*dpr);
+    gc.height=Math.round(cssH*dpr);
+    gc.style.width=cssW+"px";
+    gc.style.height=cssH+"px";
+    arena.style.width=cssW+"px";
+    arena.style.height=cssH+"px";
   } else {
-    W=220;H=540;
-    gc.width=Math.round(220*dpr);gc.height=Math.round(540*dpr);
-    gc.style.width="220px";gc.style.height="540px";
-    ctx.setTransform(dpr,0,0,dpr,0,0);
-    arena.style.width="220px";arena.style.height="540px";
+    W=220; H=540;
+    gc.width=Math.round(220*dpr);
+    gc.height=Math.round(540*dpr);
+    gc.style.width="220px";
+    gc.style.height="540px";
+    arena.style.width="220px";
+    arena.style.height="540px";
   }
+  // dpr 스케일 적용 (매번 새로 설정)
+  ctx.setTransform(dpr,0,0,dpr,0,0);
   DNG=Math.round(H*0.104);
-  if(lx==null)lx=W/2;
+  WALL=Math.max(4, Math.round(W*0.018));
+  lx=W/2;
 }
+
 const G=0.5,DAMP=0.58,FRIC=0.972,ITER=6,GOF=30;
 let balls=[],parts=[],flts=[],score=0,best=0,alive=true,canDrop=true,frame=0;
 let warnA=0,lx=W/2,flashA=0,flashC="",loopStarted=false;
@@ -584,6 +599,8 @@ function drawBall(c,x,y,item,alpha){
 }
 
 function render(){
+  const dpr=window.devicePixelRatio||1;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
   ctx.clearRect(0,0,W,H);
   const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,"#fef6ff");bg.addColorStop(1,"#fdf0f8");ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
   if(flashA>0){ctx.fillStyle=flashC;ctx.fillRect(0,0,W,H);flashA=Math.max(0,flashA-0.04);}
@@ -618,12 +635,16 @@ function render(){
 function drawNext(){
   const dpr=window.devicePixelRatio||1;
   const sz=86;
-  nc.width=Math.round(sz*dpr);nc.height=Math.round(sz*dpr);
-  nc.style.width=sz+"px";nc.style.height=sz+"px";
+  nc.width=Math.round(sz*dpr);
+  nc.height=Math.round(sz*dpr);
+  nc.style.width=sz+"px";
+  nc.style.height=sz+"px";
   nctx.setTransform(dpr,0,0,dpr,0,0);
   nctx.clearRect(0,0,sz,sz);
-  const orig=SZ[nextItem.tier];SZ[nextItem.tier]=Math.min(orig,30);
-  drawBall(nctx,43,43,nextItem);SZ[nextItem.tier]=orig;
+  const orig=SZ[nextItem.tier];
+  SZ[nextItem.tier]=Math.min(orig,30);
+  drawBall(nctx,43,43,nextItem);
+  SZ[nextItem.tier]=orig;
 }
 
 arena.addEventListener("mousemove",e=>{if(!alive)return;lx=e.clientX-arena.getBoundingClientRect().left;});
