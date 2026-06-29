@@ -8,7 +8,27 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:#f8f0ff;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;min-height:100vh;font-family:'Nunito',sans-serif;padding:1rem 0}
-#startScreen{display:flex;flex-direction:column;align-items:center;gap:14px;width:min(460px,96vw);padding:32px 28px;background:linear-gradient(160deg,#fce8f3,#f0e4ff,#e4eeff,#e4f4f8);border-radius:28px}
+
+/* ── 로그인/가입 화면 ── */
+#authScreen{display:flex;flex-direction:column;align-items:center;gap:16px;width:min(360px,94vw);padding:36px 28px;background:linear-gradient(160deg,#fce8f3,#f0e4ff,#e4eeff);border-radius:28px}
+.auth-title{font-size:24px;font-weight:900;color:#b06898;text-align:center;line-height:1.3}
+.auth-sub{font-size:11px;color:#c090b0;text-align:center;font-weight:700}
+.auth-tabs{display:flex;gap:8px;width:100%}
+.auth-tab{flex:1;padding:10px;border-radius:12px;border:2px solid #e8c8e0;background:transparent;font-size:13px;font-weight:800;color:#b090c0;cursor:pointer;font-family:'Nunito',sans-serif;transition:all 0.2s}
+.auth-tab.active{background:linear-gradient(135deg,#e8a0cc,#c090e8);color:#fff;border-color:transparent}
+.auth-field{width:100%;display:flex;flex-direction:column;gap:6px}
+.auth-label{font-size:11px;font-weight:800;color:#a080b0}
+.auth-input{width:100%;padding:12px 16px;border-radius:14px;border:2px solid #e8c8e0;background:rgba(255,255,255,0.88);color:#906880;font-size:15px;font-weight:700;outline:none;font-family:'Nunito',sans-serif;letter-spacing:0.5px}
+.auth-input:focus{border-color:#d090c0;background:#fff}
+.pin-wrap{display:flex;gap:10px;justify-content:center}
+.pin-input{width:52px;height:56px;border-radius:14px;border:2px solid #e8c8e0;background:rgba(255,255,255,0.88);color:#906880;font-size:22px;font-weight:900;text-align:center;outline:none;font-family:'Nunito',sans-serif}
+.pin-input:focus{border-color:#d090c0;background:#fff}
+#authBtn{width:100%;padding:14px;border-radius:16px;border:none;background:linear-gradient(135deg,#e8a0cc,#c090e8);color:#fff;font-size:16px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 14px rgba(200,140,200,0.3)}
+#authBtn:hover{filter:brightness(1.06)}
+#authMsg{font-size:12px;font-weight:700;text-align:center;min-height:18px;color:#e05080}
+
+/* ── 시작화면 ── */
+#startScreen{display:none;flex-direction:column;align-items:center;gap:14px;width:min(460px,96vw);padding:32px 28px;background:linear-gradient(160deg,#fce8f3,#f0e4ff,#e4eeff,#e4f4f8);border-radius:28px}
 .start-title{font-size:26px;font-weight:900;color:#b06898;text-align:center;line-height:1.3}
 .start-sub{font-size:12px;color:#c090b0;text-align:center;font-weight:700}
 .legend-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
@@ -21,11 +41,10 @@ body{background:#f8f0ff;display:flex;flex-direction:column;align-items:center;ju
 .flow-dot{border-radius:50%}
 .flow-label{font-size:9px;font-weight:800;color:#906898;text-align:center;line-height:1.3}
 .flow-arrow{font-size:13px;color:#c090b0}
-#nicknameInput{width:100%;padding:13px 18px;border-radius:16px;border:2.5px solid #e8c8e0;background:rgba(255,255,255,0.88);color:#906880;font-size:15px;font-weight:800;text-align:center;outline:none;font-family:'Nunito',sans-serif}
-#nicknameInput::placeholder{color:#d8b0cc;font-weight:600}
-#nicknameInput:focus{border-color:#d090c0;background:#fff}
 #startBtn{width:100%;padding:14px;border-radius:18px;border:none;background:linear-gradient(135deg,#e8a0cc,#c090e8);color:#fff;font-size:17px;font-weight:900;cursor:pointer;font-family:'Nunito',sans-serif;box-shadow:0 4px 16px rgba(200,140,200,0.3)}
-#startBtn:hover{filter:brightness(1.06)}
+.logout-btn{font-size:11px;color:#c090b0;background:none;border:none;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;text-decoration:underline}
+
+/* ── 게임 화면 ── */
 #gameScreen{display:none;flex-direction:column;align-items:center;gap:8px;width:min(460px,96vw)}
 .game-title-bar{font-size:15px;font-weight:900;color:#b06898}
 .game-layout{display:flex;flex-direction:row;gap:8px;align-items:flex-start;width:100%}
@@ -54,9 +73,37 @@ body{background:#f8f0ff;display:flex;flex-direction:column;align-items:center;ju
 #gameOverPanel h2{font-size:22px;font-weight:900;color:#c04878}
 #gameOverPanel p{font-size:13px;color:#906878;font-weight:700}
 #restartBtn{padding:11px 30px;border-radius:20px;border:none;background:linear-gradient(135deg,#e8a0cc,#c090e8);color:#fff;font-size:14px;font-weight:900;cursor:pointer}
+#rankStatus{font-size:9px;color:#c0a0c0;text-align:center;margin-top:4px;min-height:12px}
 </style>
 </head>
 <body>
+
+<!-- 로그인/가입 화면 -->
+<div id="authScreen">
+  <div class="auth-title">🎀 Webcash<br>Product Game</div>
+  <div class="auth-sub">닉네임과 비밀번호 4자리로 시작하세요</div>
+  <div class="auth-tabs">
+    <button class="auth-tab active" id="tabLogin" onclick="switchTab('login')">로그인</button>
+    <button class="auth-tab" id="tabRegister" onclick="switchTab('register')">회원가입</button>
+  </div>
+  <div class="auth-field">
+    <div class="auth-label">닉네임</div>
+    <input class="auth-input" id="authNick" type="text" placeholder="닉네임 입력" maxlength="10">
+  </div>
+  <div class="auth-field">
+    <div class="auth-label">비밀번호 (숫자 4자리)</div>
+    <div class="pin-wrap">
+      <input class="pin-input" id="pin1" type="password" inputmode="numeric" maxlength="1">
+      <input class="pin-input" id="pin2" type="password" inputmode="numeric" maxlength="1">
+      <input class="pin-input" id="pin3" type="password" inputmode="numeric" maxlength="1">
+      <input class="pin-input" id="pin4" type="password" inputmode="numeric" maxlength="1">
+    </div>
+  </div>
+  <div id="authMsg"></div>
+  <button id="authBtn" onclick="doAuth()">로그인</button>
+</div>
+
+<!-- 시작화면 -->
 <div id="startScreen">
   <div class="start-title">🎀 Webcash Product Game</div>
   <div class="start-sub">같은 그룹 상품끼리 합쳐서 Webcash AX를 만들어요!</div>
@@ -77,9 +124,11 @@ body{background:#f8f0ff;display:flex;flex-direction:column;align-items:center;ju
       <div class="flow-step"><div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#b0f8e0,#40d090);display:flex;align-items:center;justify-content:center;font-size:16px">🎉</div><div class="flow-label">클리어!</div></div>
     </div>
   </div>
-  <input id="nicknameInput" type="text" placeholder="✏️ 닉네임을 입력하세요" maxlength="10">
-  <button id="startBtn">🎮 게임 시작!</button>
+  <button id="startBtn" onclick="startGame()">🎮 게임 시작!</button>
+  <button class="logout-btn" onclick="logout()">다른 계정으로 로그인</button>
 </div>
+
+<!-- 게임화면 -->
 <div id="gameScreen">
   <div class="game-title-bar">🎀 Webcash Product Game</div>
   <div class="game-layout">
@@ -105,14 +154,177 @@ body{background:#f8f0ff;display:flex;flex-direction:column;align-items:center;ju
       </div>
     </div>
     <div id="rightPanel">
-      <div class="panel"><div class="panel-title">득점 순위</div><div id="rankList"></div></div>
+      <div class="panel">
+        <div class="panel-title">🏆 전체 순위</div>
+        <div id="rankList"></div>
+        <div id="rankStatus"></div>
+      </div>
       <div class="panel"><div class="panel-title">합체 순서</div>
         <div id="mergeGuide"><b>같은 그룹</b> PRODUCT 2개<br>→ GROUP<br><br><b>같은 그룹</b> GROUP 2개<br>→ Webcash<br><br>Webcash 2개<br>→ <b>👑 Webcash AX</b><br><br>AX 2개<br>→ <b>🎉 클리어!</b></div>
       </div>
     </div>
   </div>
 </div>
-<script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDybhCxoZy8t2Wryr9DDe-icv5D9VDKJ_A",
+  authDomain: "webcash-game.firebaseapp.com",
+  databaseURL: "https://webcash-game-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "webcash-game",
+  storageBucket: "webcash-game.firebasestorage.app",
+  messagingSenderId: "143306161904",
+  appId: "1:143306161904:web:43360a8f3f7ff897714c35"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ── PIN 입력 자동 이동 ──
+['pin1','pin2','pin3','pin4'].forEach((id,i,arr)=>{
+  const el=document.getElementById(id);
+  el.addEventListener('input',()=>{
+    el.value=el.value.replace(/\D/,'');
+    if(el.value&&i<arr.length-1)document.getElementById(arr[i+1]).focus();
+  });
+  el.addEventListener('keydown',e=>{
+    if(e.key==='Backspace'&&!el.value&&i>0)document.getElementById(arr[i-1]).focus();
+    if(e.key==='Enter')doAuth();
+  });
+});
+
+// ── 탭 전환 ──
+window.switchTab=function(tab){
+  document.getElementById('tabLogin').className='auth-tab'+(tab==='login'?' active':'');
+  document.getElementById('tabRegister').className='auth-tab'+(tab==='register'?' active':'');
+  document.getElementById('authBtn').textContent=tab==='login'?'로그인':'가입하기';
+  document.getElementById('authMsg').textContent='';
+  window._authTab=tab;
+};
+window._authTab='login';
+
+function getPin(){
+  return ['pin1','pin2','pin3','pin4'].map(id=>document.getElementById(id).value).join('');
+}
+function clearPin(){
+  ['pin1','pin2','pin3','pin4'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('pin1').focus();
+}
+
+// ── 간단 해시 (PIN 4자리 + 닉네임 조합) ──
+async function hashPin(nick,pin){
+  const text=nick+'|'+pin+'|wc2025';
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,16);
+}
+
+window.doAuth=async function(){
+  const nick=document.getElementById('authNick').value.trim();
+  const pin=getPin();
+  const msg=document.getElementById('authMsg');
+
+  if(!nick){msg.textContent='닉네임을 입력해주세요';return;}
+  if(nick.length<2){msg.textContent='닉네임은 2자 이상이어야 해요';return;}
+  if(pin.length!==4||!/^\d{4}$/.test(pin)){msg.textContent='비밀번호 4자리를 모두 입력해주세요';return;}
+
+  msg.style.color='#a070c0';
+  msg.textContent='확인 중...';
+  document.getElementById('authBtn').disabled=true;
+
+  try{
+    const key=nick.replace(/[.#$[\]/]/g,'_');
+    const userRef=ref(db,`users/${key}`);
+    const snap=await get(userRef);
+    const hash=await hashPin(nick,pin);
+
+    if(window._authTab==='login'){
+      if(!snap.exists()){msg.style.color='#e05080';msg.textContent='존재하지 않는 닉네임이에요. 가입해주세요!';document.getElementById('authBtn').disabled=false;return;}
+      const stored=snap.val();
+      if(stored.hash!==hash){msg.style.color='#e05080';msg.textContent='비밀번호가 틀렸어요 🔒';clearPin();document.getElementById('authBtn').disabled=false;return;}
+      // 로그인 성공
+      loginSuccess(nick,key);
+    } else {
+      // 회원가입
+      if(snap.exists()){msg.style.color='#e05080';msg.textContent='이미 있는 닉네임이에요. 다른 닉네임을 써주세요!';document.getElementById('authBtn').disabled=false;return;}
+      await set(userRef,{nick,hash,createdAt:Date.now()});
+      loginSuccess(nick,key);
+    }
+  }catch(e){
+    msg.style.color='#e05080';
+    msg.textContent='오류가 발생했어요. 다시 시도해주세요';
+    document.getElementById('authBtn').disabled=false;
+  }
+};
+
+function loginSuccess(nick,key){
+  localStorage.setItem('wcNick',nick);
+  localStorage.setItem('wcKey',key);
+  window._nick=nick;
+  window._key=key;
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('startScreen').style.display='flex';
+  document.getElementById('authMsg').textContent='';
+  document.getElementById('authBtn').disabled=false;
+}
+
+window.logout=function(){
+  localStorage.removeItem('wcNick');
+  localStorage.removeItem('wcKey');
+  window._nick=null;window._key=null;
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('gameScreen').style.display='none';
+  document.getElementById('authScreen').style.display='flex';
+  document.getElementById('authNick').value='';
+  clearPin();
+};
+
+// 자동 로그인 (localStorage)
+const savedNick=localStorage.getItem('wcNick');
+const savedKey=localStorage.getItem('wcKey');
+if(savedNick&&savedKey){
+  window._nick=savedNick;window._key=savedKey;
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('startScreen').style.display='flex';
+}
+
+// ── 실시간 순위 ──
+let globalRank=[];
+onValue(ref(db,'rankings'),(snapshot)=>{
+  const data=snapshot.val()||{};
+  globalRank=Object.values(data).sort((a,b)=>b.score-a.score).slice(0,5);
+  drawRank();
+  document.getElementById('rankStatus').textContent='';
+});
+
+function drawRank(){
+  const M=["🥇","🥈","🥉","4위","5위"];
+  const rkEl=document.getElementById('rankList');
+  rkEl.innerHTML="";
+  if(!globalRank.length){rkEl.innerHTML="<div style='font-size:10px;color:#c8a8c0;font-weight:700;text-align:center;padding:8px 0'>아직 기록 없음</div>";return;}
+  globalRank.forEach((r,i)=>{
+    const d=document.createElement("div");d.className="rank-row"+(r.name===window._nick?" me":"");
+    d.innerHTML=`<span class="rank-medal">${M[i]||i+1+"위"}</span><span class="rank-name">${r.name}</span><span class="rank-score">${r.score}</span>`;
+    rkEl.appendChild(d);
+  });
+}
+
+async function submitScore(score){
+  if(!window._nick||score<=0)return;
+  try{
+    const rRef=ref(db,`rankings/${window._key}`);
+    const snap=await get(rRef);
+    const existing=snap.val();
+    if(!existing||score>existing.score){
+      await set(rRef,{name:window._nick,score,updatedAt:Date.now()});
+    }
+    document.getElementById('rankStatus').textContent='✅ 점수 등록!';
+    setTimeout(()=>{document.getElementById('rankStatus').textContent='';},2000);
+  }catch(e){}
+}
+
+// ── 게임 로직 ──
 const GROUPS=[
   {name:"CMS",       col0:{l:"#dce8ff",m:"#b0c8f4",d:"#7898d8"},col1:{l:"#c0d0ff",m:"#88a8f0",d:"#5070c8"},items:["e금고","Branch","경리나라","rERP","IHB"]},
   {name:"금융AI",    col0:{l:"#f0dcff",m:"#d8b0f0",d:"#b080d0"},col1:{l:"#e4c8ff",m:"#c090e8",d:"#9060c0"},items:["BranchQ","IHB Q","rERP Q","AI MIS","공공AX","경리365","Agent Banking"]},
@@ -125,6 +337,7 @@ const SZ=[22,46,72,94],SC=[2,20,80,300],CLR_PTS=1000;
 const WGTS=[3,12,12,2];
 const POOL=[];
 GROUPS.forEach((g,gi)=>g.items.forEach((_,ii)=>{for(let w=0;w<WGTS[gi];w++)POOL.push([gi,ii]);}));
+
 function mkProd(gi,ii){return{tier:0,gi,ii,lbl:GROUPS[gi].items[ii]};}
 function mkGrp(gi){return{tier:1,gi,ii:-1,lbl:GROUPS[gi].name};}
 function mkWC(){return{tier:2,gi:-1,ii:-1,lbl:"Webcash"};}
@@ -142,40 +355,33 @@ function mergeable(a,b){
   if(t===0||t===1)return a.item.gi===b.item.gi;
   return true;
 }
+
 const W=220,H=540,WALL=4,FLOOR=4,DNG=56;
-const G=0.5,DAMP=0.58,FRIC=0.972,ITER=6,GOF=48;
+const G=0.5,DAMP=0.58,FRIC=0.972,ITER=6,GOF=30;
 let balls=[],parts=[],flts=[],score=0,best=0,alive=true,canDrop=true,frame=0;
-let warnA=0,lx=W/2,flashA=0,flashC="";
-let nick="Player",rank=[],nextItem=rndItem();
+let warnA=0,lx=W/2,flashA=0,flashC="",loopStarted=false;
+let nextItem=rndItem();
+
 const arena=document.getElementById("arena");
 const gc=document.getElementById("gc"),ctx=gc.getContext("2d");
 const nc=document.getElementById("nc"),nctx=nc.getContext("2d");
 const sEl=document.getElementById("scoreNum"),bEl=document.getElementById("bestNum");
-const nnEl=document.getElementById("playerNameEl"),rkEl=document.getElementById("rankList");
+const nnEl=document.getElementById("playerNameEl");
 const goEl=document.getElementById("gameOverPanel");
-document.getElementById("startBtn").onclick=()=>{
-  const v=document.getElementById("nicknameInput").value.trim();
-  nick=v||"Player";nnEl.textContent=nick;
-  document.getElementById("startScreen").style.display="none";
-  document.getElementById("gameScreen").style.display="flex";
-  drawNext();loop();
+
+window.startGame=function(){
+  nnEl.textContent=window._nick||'Player';
+  document.getElementById('startScreen').style.display='none';
+  document.getElementById('gameScreen').style.display='flex';
+  resetGame();
+  if(!loopStarted){loopStarted=true;loop();}
 };
-document.getElementById("nicknameInput").onkeydown=e=>{if(e.key==="Enter")document.getElementById("startBtn").click();};
-function updRank(){
-  const i=rank.findIndex(r=>r.n===nick);
-  if(i>=0){if(score>rank[i].s)rank[i].s=score;}else rank.push({n:nick,s:score});
-  rank.sort((a,b)=>b.s-a.s);if(rank.length>5)rank.length=5;drawRank();
+
+function resetGame(){
+  balls=[];parts=[];flts=[];score=0;alive=true;canDrop=true;frame=0;warnA=0;flashA=0;
+  nextItem=rndItem();sEl.textContent=0;goEl.style.display="none";drawNext();
 }
-function drawRank(){
-  const M=["🥇","🥈","🥉","4위","5위"];rkEl.innerHTML="";
-  if(!rank.length){rkEl.innerHTML="<div style='font-size:10px;color:#c8a8c0;font-weight:700;text-align:center;padding:8px 0'>아직 기록 없음</div>";return;}
-  rank.forEach((r,i)=>{
-    const d=document.createElement("div");d.className="rank-row"+(r.n===nick?" me":"");
-    d.innerHTML=`<span class="rank-medal">${M[i]}</span><span class="rank-name">${r.n}</span><span class="rank-score">${r.s}</span>`;
-    rkEl.appendChild(d);
-  });
-}
-drawRank();
+
 function Ball(x,y,item){
   this.x=x;this.y=y;this.item=item;
   this.r=SZ[item.tier];
@@ -189,6 +395,7 @@ function burst(x,y,c,n,big){
   }
 }
 function floatTxt(x,y,txt,big,c){flts.push({x,y,vy:big?-3.5:-2,life:1,txt,big,c});}
+
 function physics(){
   for(let b of balls){
     if(b.dead)continue;
@@ -214,6 +421,7 @@ function physics(){
     }
   }
 }
+
 function tryMerge(){
   const live=balls.filter(b=>!b.dead);
   for(let i=0;i<live.length;i++){
@@ -227,10 +435,11 @@ function tryMerge(){
       balls=balls.filter(b=>!b.dead);
       if(a.item.tier===3){
         score+=CLR_PTS;if(score>best)best=score;
-        sEl.textContent=score;bEl.textContent=best;updRank();
+        sEl.textContent=score;bEl.textContent=best;
         burst(mx,my,"#80f8d0",60,true);burst(mx,my,"#fff",40,true);burst(mx,my,"#ffe080",50,true);
         floatTxt(mx,my-30,"🎉 클리어! +"+CLR_PTS,true,"#20c070");
-        flashA=0.85;flashC="rgba(140,255,200,0.85)";return;
+        flashA=0.85;flashC="rgba(140,255,200,0.85)";
+        submitScore(score);return;
       }
       const ni=a.item.tier===0?mkGrp(a.item.gi):a.item.tier===1?mkWC():mkAX();
       const nb=new Ball(mx,my,ni);
@@ -238,26 +447,33 @@ function tryMerge(){
       balls.push(nb);
       const pts=SC[ni.tier],big=ni.tier>=2;
       score+=pts;if(score>best)best=score;
-      sEl.textContent=score;bEl.textContent=best;updRank();
+      sEl.textContent=score;bEl.textContent=best;
       burst(mx,my,getCol(ni).m,big?28:14,big);
       floatTxt(mx,my-nb.r,"+"+pts,big,null);
       return;
     }
   }
 }
+
 function checkGameOver(){
   if(!alive)return;
   let maxDf=0;
   for(const b of balls){
     if(b.dead)continue;
     const spd=Math.sqrt(b.vx*b.vx+b.vy*b.vy);
-    if(b.y-b.r<DNG&&spd<2){
+    if(b.y-b.r<DNG&&spd<3){
       b.df++;maxDf=Math.max(maxDf,b.df);
-      if(b.df>=GOF){alive=false;updRank();goEl.style.display="flex";document.getElementById("goScoreText").textContent="최종 점수: "+score+"점 🎀";return;}
-    }else b.df=Math.max(0,b.df-3);
+      if(b.df>=GOF){
+        alive=false;
+        goEl.style.display="flex";
+        document.getElementById("goScoreText").textContent="최종 점수: "+score+"점 🎀";
+        submitScore(score);return;
+      }
+    }else b.df=Math.max(0,b.df-1);
   }
   warnA=maxDf>0?Math.min(0.6,(maxDf/GOF)*0.8):0;
 }
+
 function wrapLines(c,txt,maxW,fs){
   c.font=`900 ${fs}px 'Nunito',sans-serif`;
   if(c.measureText(txt).width<=maxW)return[txt];
@@ -269,6 +485,7 @@ function wrapLines(c,txt,maxW,fs){
   }
   const h=Math.ceil(txt.length/2);return[txt.slice(0,h),txt.slice(h)];
 }
+
 function drawBall(c,x,y,item,alpha){
   const r=SZ[item.tier],cl=getCol(item);
   c.save();c.globalAlpha=alpha||1;
@@ -314,6 +531,7 @@ function drawBall(c,x,y,item,alpha){
   }
   c.restore();
 }
+
 function render(){
   ctx.clearRect(0,0,W,H);
   const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,"#fef6ff");bg.addColorStop(1,"#fdf0f8");ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
@@ -345,27 +563,30 @@ function render(){
     ctx.fillStyle=f.c||"#f8e060";ctx.fillText(f.txt,f.x,f.y);ctx.restore();return true;
   });
 }
+
 function drawNext(){
   nctx.clearRect(0,0,86,86);
   const orig=SZ[nextItem.tier];SZ[nextItem.tier]=Math.min(orig,30);
   drawBall(nctx,43,43,nextItem);SZ[nextItem.tier]=orig;
 }
+
 arena.addEventListener("mousemove",e=>{if(!alive)return;lx=e.clientX-arena.getBoundingClientRect().left;});
 arena.addEventListener("mouseleave",()=>{lx=null;});
 arena.addEventListener("click",e=>{if(!alive||!canDrop)return;drop(e.clientX-arena.getBoundingClientRect().left);});
 arena.addEventListener("touchmove",e=>{e.preventDefault();lx=e.touches[0].clientX-arena.getBoundingClientRect().left;},{passive:false});
 arena.addEventListener("touchend",()=>{if(alive&&canDrop)drop(lx??W/2);});
+
 function drop(cx){
   const r=SZ[nextItem.tier],px=Math.max(WALL+r,Math.min(W-WALL-r,cx));
   const b=new Ball(px,r+WALL+3,nextItem);b.vy=2;balls.push(b);
   nextItem=rndItem();drawNext();
   canDrop=false;setTimeout(()=>{canDrop=true;},450);
 }
-document.getElementById("restartBtn").onclick=()=>{
-  balls=[];parts=[];flts=[];score=0;alive=true;canDrop=true;frame=0;warnA=0;flashA=0;
-  nextItem=rndItem();sEl.textContent=0;goEl.style.display="none";drawNext();
-};
+
+document.getElementById("restartBtn").onclick=resetGame;
+
 function loop(){requestAnimationFrame(loop);physics();tryMerge();checkGameOver();render();frame++;}
+
 </script>
 </body>
 </html>
