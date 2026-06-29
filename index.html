@@ -74,6 +74,32 @@ body{background:#f8f0ff;display:flex;flex-direction:column;align-items:center;ju
 #gameOverPanel p{font-size:13px;color:#906878;font-weight:700}
 #restartBtn{padding:11px 30px;border-radius:20px;border:none;background:linear-gradient(135deg,#e8a0cc,#c090e8);color:#fff;font-size:14px;font-weight:900;cursor:pointer}
 #rankStatus{font-size:9px;color:#c0a0c0;text-align:center;margin-top:4px;min-height:12px}
+@media(max-width:480px){
+  #authScreen{width:94vw;padding:28px 18px}
+  #startScreen{width:94vw;padding:24px 16px}
+  .start-title{font-size:22px}
+  #gameScreen{width:100vw;padding:0 4px}
+  .game-title-bar{font-size:13px}
+  .game-layout{flex-direction:column;align-items:center;gap:6px}
+  #leftPanel{width:100%;flex-direction:row;flex-wrap:wrap;gap:6px}
+  #scoreCard{flex:1;min-width:120px}
+  #nextCard{flex:1;min-width:100px;text-align:center}
+  #nextCard canvas{margin:0 auto}
+  #rightPanel{width:100%;flex-direction:row;flex-wrap:wrap;gap:6px}
+  #rightPanel .panel{flex:1;min-width:140px}
+  #arenaWrap{width:100%}
+  #arena{width:100% !important;max-width:400px;height:65vw;min-height:320px;max-height:480px}
+  #gc{width:100% !important;height:100% !important}
+  .rank-row{padding:3px 5px}
+  .rank-name{font-size:9px}
+  .rank-score{font-size:9px}
+  #mergeGuide{font-size:8px}
+  .panel-title{font-size:8px}
+  .leg-items{font-size:9px}
+  .leg-name{font-size:11px}
+  .flow-label{font-size:8px}
+  #scoreNum{font-size:26px}
+}
 </style>
 </head>
 <body>
@@ -356,7 +382,23 @@ function mergeable(a,b){
   return true;
 }
 
-const W=220,H=540,WALL=4,FLOOR=4,DNG=56;
+let W=220,H=540,WALL=4,FLOOR=4,DNG=56;
+function resizeArena(){
+  const isMobile=window.innerWidth<=480;
+  if(isMobile){
+    const aw=Math.min(window.innerWidth-8,400);
+    const ah=Math.min(Math.max(aw*0.65,320),480);
+    W=aw;H=ah;
+    gc.width=aw;gc.height=ah;
+    arena.style.width=aw+"px";arena.style.height=ah+"px";
+  } else {
+    W=220;H=540;
+    gc.width=220;gc.height=540;
+    arena.style.width="220px";arena.style.height="540px";
+  }
+  DNG=Math.round(H*0.104);
+  if(lx==null)lx=W/2;
+}
 const G=0.5,DAMP=0.58,FRIC=0.972,ITER=6,GOF=30;
 let balls=[],parts=[],flts=[],score=0,best=0,alive=true,canDrop=true,frame=0;
 let warnA=0,lx=W/2,flashA=0,flashC="",loopStarted=false;
@@ -370,6 +412,7 @@ const nnEl=document.getElementById("playerNameEl");
 const goEl=document.getElementById("gameOverPanel");
 
 window.startGame=function(){
+  resizeArena();
   nnEl.textContent=window._nick||'Player';
   document.getElementById('startScreen').style.display='none';
   document.getElementById('gameScreen').style.display='flex';
@@ -589,6 +632,7 @@ function drop(cx){
 document.getElementById("restartBtn").onclick=resetGame;
 
 function loop(){requestAnimationFrame(loop);physics();tryMerge();checkGameOver();render();frame++;}
+window.addEventListener("resize",()=>{if(document.getElementById("gameScreen").style.display!=="none")resizeArena();});
 
 </script>
 </body>
