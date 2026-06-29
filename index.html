@@ -75,38 +75,53 @@ body{background:#f8f0ff;display:flex;flex-direction:column;align-items:center;ju
 #restartBtn{padding:11px 30px;border-radius:20px;border:none;background:linear-gradient(135deg,#e8a0cc,#c090e8);color:#fff;font-size:14px;font-weight:900;cursor:pointer}
 #rankStatus{font-size:9px;color:#c0a0c0;text-align:center;margin-top:4px;min-height:12px}
 @media(max-width:600px){
-  body{padding:0.5rem 0}
+  body{padding:0.5rem 0;overflow-x:hidden}
   #authScreen{width:92vw;padding:28px 18px}
   #startScreen{width:92vw;padding:24px 16px}
   .start-title{font-size:20px}
-  /* 게임화면: 세로 풀스크린 */
-  #gameScreen{width:100vw;padding:0;gap:6px}
-  .game-title-bar{font-size:13px;padding:4px 0}
-  /* 레이아웃: 아레나 먼저, 패널들 아래 */
-  .game-layout{flex-direction:column;align-items:center;gap:6px;width:100%}
-  /* 아레나 순서 변경 */
-  #arenaWrap{order:1;width:100%;display:flex;justify-content:center}
-  #leftPanel{order:2;width:92vw;flex-direction:row;gap:6px;flex-wrap:wrap}
-  #rightPanel{order:3;width:92vw;flex-direction:row;gap:6px;flex-wrap:wrap}
-  #leftPanel,#rightPanel{display:flex}
-  #scoreCard{flex:1;min-width:130px;text-align:center}
-  #nextCard{flex:1;min-width:100px;text-align:center}
-  #nextCard canvas{margin:0 auto;display:block}
-  #rightPanel .panel{flex:1;min-width:130px}
-  /* 아레나 크기 */
-  #arena{width:92vw !important;height:calc(92vw * 2.45) !important;max-height:72vh;margin:0 auto}
-  #gc{position:absolute;inset:0;width:100% !important;height:100% !important}
-  /* 폰트 */
-  #scoreNum{font-size:28px}
-  #bestRow{font-size:10px}
-  #playerNameEl{font-size:10px}
-  .panel-title{font-size:8px;margin-bottom:5px}
-  .rank-row{padding:3px 4px;margin-bottom:3px}
-  .rank-medal{font-size:11px}
-  .rank-name{font-size:9px}
+  #gameScreen{width:100vw;padding:0 4px;gap:4px}
+  .game-title-bar{font-size:13px}
+  /* 핵심: 세로 스택, 아레나가 맨 위 */
+  .game-layout{
+    flex-direction:column !important;
+    align-items:center !important;
+    width:100% !important;
+    gap:6px
+  }
+  #arenaWrap{
+    width:92vw !important;
+    order:-1;
+    display:flex;
+    justify-content:center
+  }
+  #arena{
+    width:92vw !important;
+    height:calc(92vw * 2.0) !important;
+    max-height:60vh !important;
+    margin:0 auto
+  }
+  #leftPanel{
+    width:92vw !important;
+    flex-direction:row !important;
+    flex-wrap:wrap;
+    gap:6px;
+    flex-shrink:unset !important
+  }
+  #rightPanel{
+    width:92vw !important;
+    flex-direction:row !important;
+    flex-wrap:wrap;
+    gap:6px;
+    flex-shrink:unset !important
+  }
+  #scoreCard{flex:1;min-width:120px}
+  #nextCard{flex:0 0 auto;min-width:80px}
+  #rightPanel .panel{flex:1;min-width:120px}
+  #scoreNum{font-size:26px}
+  .panel-title{font-size:8px}
+  .rank-name{font-size:9px;word-break:break-all}
   .rank-score{font-size:9px}
-  #mergeGuide{font-size:8px;line-height:1.6}
-  #rankStatus{font-size:8px}
+  #mergeGuide{font-size:8px;line-height:1.5}
 }
 </style>
 </head>
@@ -392,34 +407,37 @@ function mergeable(a,b){
 
 let W=220,H=540,WALL=4,FLOOR=4,DNG=56;
 function resizeArena(){
-  const dpr=window.devicePixelRatio||1;
-  const isMobile=window.innerWidth<=600;
+  const dpr = window.devicePixelRatio || 1;
+  const isMobile = window.innerWidth <= 600;
+
   if(isMobile){
-    // CSS 논리 크기
-    const cssW=Math.round(window.innerWidth*0.92);
-    const cssH=Math.min(Math.round(cssW*2.45), Math.round(window.innerHeight*0.72), 700);
-    W=cssW; H=cssH;
-    // 물리 픽셀 (dpr 배율 → 선명)
-    gc.width=Math.round(cssW*dpr);
-    gc.height=Math.round(cssH*dpr);
-    gc.style.width=cssW+"px";
-    gc.style.height=cssH+"px";
-    arena.style.width=cssW+"px";
-    arena.style.height=cssH+"px";
+    // CSS가 이미 arena 크기를 잡아줌 — 그 크기를 읽어서 캔버스에 반영
+    // 강제로 CSS 크기 계산
+    const vw92 = Math.floor(window.innerWidth * 0.92);
+    const cssH = Math.min(Math.floor(vw92 * 2.0), Math.floor(window.innerHeight * 0.60), 600);
+    W = vw92;
+    H = cssH;
+    // arena DOM 크기 직접 설정
+    arena.style.width = vw92 + 'px';
+    arena.style.height = cssH + 'px';
+    // 캔버스 물리 픽셀 = CSS 크기 × dpr
+    gc.width  = Math.round(vw92 * dpr);
+    gc.height = Math.round(cssH * dpr);
+    gc.style.width  = vw92 + 'px';
+    gc.style.height = cssH + 'px';
   } else {
-    W=220; H=540;
-    gc.width=Math.round(220*dpr);
-    gc.height=Math.round(540*dpr);
-    gc.style.width="220px";
-    gc.style.height="540px";
-    arena.style.width="220px";
-    arena.style.height="540px";
+    W = 220; H = 540;
+    arena.style.width  = '220px';
+    arena.style.height = '540px';
+    gc.width  = Math.round(220 * dpr);
+    gc.height = Math.round(540 * dpr);
+    gc.style.width  = '220px';
+    gc.style.height = '540px';
   }
-  // dpr 스케일 적용 (매번 새로 설정)
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-  DNG=Math.round(H*0.104);
-  WALL=Math.max(4, Math.round(W*0.018));
-  lx=W/2;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  DNG  = Math.round(H * 0.104);
+  WALL = Math.max(4, Math.round(W * 0.018));
+  lx   = W / 2;
 }
 
 const G=0.5,DAMP=0.58,FRIC=0.972,ITER=6,GOF=30;
@@ -599,8 +617,8 @@ function drawBall(c,x,y,item,alpha){
 }
 
 function render(){
-  const dpr=window.devicePixelRatio||1;
-  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const _dpr=window.devicePixelRatio||1;
+  ctx.setTransform(_dpr,0,0,_dpr,0,0);
   ctx.clearRect(0,0,W,H);
   const bg=ctx.createLinearGradient(0,0,0,H);bg.addColorStop(0,"#fef6ff");bg.addColorStop(1,"#fdf0f8");ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
   if(flashA>0){ctx.fillStyle=flashC;ctx.fillRect(0,0,W,H);flashA=Math.max(0,flashA-0.04);}
