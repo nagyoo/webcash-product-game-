@@ -538,16 +538,19 @@ function checkGameOver(){
   let maxDf=0;
   for(const b of balls){
     if(b.dead)continue;
-    const spd=Math.sqrt(b.vx*b.vx+b.vy*b.vy);
-    if(b.y-b.r<DNG&&spd<3){
+    // spd 조건 제거 — 위험선 위에 있으면 무조건 카운트
+    if(b.y-b.r<DNG){
       b.df++;maxDf=Math.max(maxDf,b.df);
       if(b.df>=GOF){
         alive=false;
+        if(score>best){best=score;bEl.textContent=best;}
         goEl.style.display="flex";
         document.getElementById("goScoreText").textContent="최종 점수: "+score+"점 🎀";
         submitScore(score);return;
       }
-    }else b.df=Math.max(0,b.df-1);
+    }else{
+      b.df=Math.max(0,b.df-2);
+    }
   }
   warnA=maxDf>0?Math.min(0.6,(maxDf/GOF)*0.8):0;
 }
